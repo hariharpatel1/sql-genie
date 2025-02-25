@@ -2,7 +2,9 @@ from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 import pandas as pd
+import logging
 
+logger = logging.getLogger(__name__)
 
 class AgentState(BaseModel):
     """Model for the agent state during a conversation turn"""
@@ -51,23 +53,50 @@ class AgentState(BaseModel):
     
     def get_formatted_schemas(self) -> str:
         """Get the table schemas in a format suitable for LLM prompts"""
+        # Handle case where table_schemas is already a string
+        if isinstance(self.table_schemas, str):
+            return self.table_schemas
+        
+        # Handle case where table_schemas is empty
+        if not self.table_schemas:
+            return "No database schemas available."
+        
         schema_text = ""
         
         for table_name, schema in self.table_schemas.items():
-            schema_text += f"Table: {table_name}\n"
+            logger.info(f"Formatting schema for table: {table_name}")
+            
+            # Handle different possible schema structures
+            if isinstance(schema, str):
+                # If schema is a string, just add it directly
+                schema_text += f"Table: {table_name}\n{schema}\n\n"
+                continue
+            
+            # Extract columns based on different possible dict structures
+            columns = schema.get('columns', []) if isinstance(schema, dict) else schema
+            
+            schema_text += f"Table: events.{table_name}\n"
             schema_text += "Columns:\n"
             
-            for column in schema:
-                name = column.get("column_name", "")
-                data_type = column.get("data_type", "")
-                nullable = column.get("is_nullable", "YES")
-                description = column.get("description", "")
+            for column in columns:
+                # Ensure column is a dictionary
+                if not isinstance(column, dict):
+                    continue
                 
-                schema_text += f"  - {name} ({data_type}"
-                if nullable == "NO":
-                    schema_text += ", NOT NULL"
-                schema_text += f"): {description}\n"
+                try:
+                    name = column.get("column_name", "UNKNOWN")
+                    data_type = column.get("data_type", "UNDEFINED")
+                    nullable = column.get("is_nullable", "YES")
+                    description = column.get("description", "No description")
+                    
+                    schema_text += f"  - {name} ({data_type}"
+                    if nullable == "NO":
+                        schema_text += ", NOT NULL"
+                    schema_text += f"): {description}\n"
+                except Exception as e:
+                    logger.error(f"Error formatting column {column}: {e}")
+                    continue
             
             schema_text += "\n"
-        
-        return schema_text
+        logger.info(f"Formatted table schemas:\n{schema_text}")
+        return schema_text or "No valid schema information found."

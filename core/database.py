@@ -1,4 +1,5 @@
-import os
+import os, sqlparse
+import re
 import pandas as pd
 import psycopg2
 from psycopg2 import sql
@@ -179,25 +180,46 @@ class RedshiftConnector:
             logger.error(f"[RedshiftConnector] Error getting query cost estimate: {str(e)}")
             return {"error": str(e)}
     
-    def enforce_query_limits(self, sql_query: str, max_rows: int = None) -> str:
+    def enforce_query_limits(self, query: str, max_rows: int = 100000) -> str:
         """
-        Enforce limits on a query to prevent excessive resource usage
+        Intelligently add LIMIT to queries while preserving their original structure
         
         Args:
-            sql_query: Original SQL query
-            max_rows: Maximum number of rows to return
-            
-        Returns:
-            Modified SQL query with limits
-        """
-        if max_rows is None:
-            max_rows = settings.REDSHIFT_MAX_ROWS
-            
-        # Simple implementation - just add a LIMIT clause if not present
-        if "LIMIT" not in sql_query.upper():
-            sql_query = f"{sql_query} LIMIT {max_rows}"
+            query (str): Original SQL query
+            max_rows (int): Maximum number of rows to return
         
-        return sql_query
+        Returns:
+            str: Query with LIMIT added if necessary
+        """
+        # Normalize the query
+        query = query.strip()
+        
+        # Check if query already contains LIMIT (case-insensitive)
+        if re.search(r'\bLIMIT\b', query, re.IGNORECASE):
+            return query
+        
+        # Check for aggregate functions
+        aggregate_keywords = ['COUNT(', 'SUM(', 'AVG(', 'MAX(', 'MIN(']
+        if any(keyword in query.upper() for keyword in aggregate_keywords):
+            return query
+        
+        # Check if it's a SELECT query
+        select_match = re.search(r'\bSELECT\b', query, re.IGNORECASE)
+        if not select_match:
+            return query
+        
+        # Split the query into parts
+        parts = query.split(';')
+        
+        # Add LIMIT to the main query (last part)
+        main_query = parts[-1].strip()
+        
+        # Add LIMIT to the main query
+        limit_query = f"{main_query} LIMIT {max_rows}"
+        
+        # Reconstruct the full query
+        parts[-1] = limit_query
+        return ';'.join(parts)
     
     def test_connection(self) -> bool:
         """
