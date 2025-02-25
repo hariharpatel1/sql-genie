@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 # Import app UI (after environment variables are loaded)
 from ui.app_ui import StreamlitUI
 
-
 def main():
     """Main entry point for the application"""
     try:
@@ -26,7 +25,6 @@ def main():
     except Exception as e:
         logger.error(f"Application error: {str(e)}", exc_info=True)
         st.error(f"An error occurred: {str(e)}")
-
 
 if __name__ == "__main__":
     main()

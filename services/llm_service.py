@@ -232,6 +232,8 @@ class LLMService:
             
         Returns:
             A natural language response
+            containing the user query, SQL query, SQL results, and a response to the user query
+            also contain some insights about the result data in 4-5 lines
         """
         logger.info(f"[LLMService] Formulating response for query: {query}")
         prompt = PromptTemplate.from_template(
@@ -242,9 +244,10 @@ class LLMService:
             And the results of the query:
             {sql_results}
             
-            Provide a clear, concise response to the user's query based on the SQL results.
+            Provide a clear, response to the user's query based on the SQL results.
             Try to answer the user's question directly, and format the response nicely.
-            Provide a table of data if relevant to the query.
+            don't forget to include some insights about the result data in 4-5 lines.
+            quatify the result data in 4-5 lines.
             """
         )
         
