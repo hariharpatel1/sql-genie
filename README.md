@@ -13,39 +13,6 @@ A conversational AI agent that helps query SQL databases using natural language.
 - Remember conversation context
 - Show raw SQL and query results
 
-## Project Structure
-
-```
-sql-genie/
-│
-├── main.py                   # Streamlit application entry point
-├── config.py                 # Configuration settings
-│
-├── models/                   # Pydantic models
-│   ├── __init__.py
-│   ├── database_models.py    # SQL table schemas
-│   └── conversation.py       # Conversation state models
-│
-├── agents/                   # Agent components
-│   ├── __init__.py
-│   ├── sql_generator.py      # SQL generation agent
-│   ├── query_validator.py    # Query validation and refinement agent
-│   └── result_explainer.py   # Results explanation agent
-│
-├── tools/                    # Tool implementations
-│   ├── __init__.py
-│   ├── redshift_tools.py     # Redshift connection and query tools
-│   └── llm_tools.py          # LLM tools for parsing and generation
-│
-├── memory/                   # Memory components
-│   ├── __init__.py
-│   └── conversation_memory.py # In-memory conversation storage
-│
-└── utils/                    # Utility functions
-    ├── __init__.py
-    └── helpers.py            # Helper functions
-```
-
 ## Setup
 
 1. Clone the repository:
