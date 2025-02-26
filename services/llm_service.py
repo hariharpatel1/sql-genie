@@ -248,6 +248,8 @@ class LLMService:
             Try to answer the user's question directly, and format the response nicely.
             don't forget to include some insights about the result data in 4-5 lines.
             quatify the result data in 4-5 lines.
+
+            also highlight possible anomalies or interesting patterns in the data.
             """
         )
         
