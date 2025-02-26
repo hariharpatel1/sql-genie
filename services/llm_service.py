@@ -151,7 +151,7 @@ class LLMService:
                 4. Is there a specific time range mentioned?
                 5. Is the user asking for aggregations or statistics?
                 6. Is there anything missing from the query that I need to ask for clarification?
-                7. ; is always at the last of the query and not in the middle of the query.
+                7. if need clarification is true, provide a specific piece of missing info
                 
                 Here are the available tables and their schemas:
                 {table_schemas}
@@ -273,6 +273,27 @@ class LLMService:
         except Exception as e:
             logger.error(f"Error formulating response: {str(e)}")
             raise
+    
+    def generate_text(self, prompt: str) -> str:
+        """
+        Generate text response from the LLM based on a prompt
+        
+        Args:
+            prompt: The prompt to send to the LLM
+            
+        Returns:
+            Text response from the LLM
+        """
+        try:
+            # Simple chain to pass the prompt directly to the LLM
+            chain = PromptTemplate.from_template("{prompt}") | self.llm | StrOutputParser()
+            
+            result = chain.invoke({"prompt": prompt})
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error generating text: {str(e)}")
+            return f"Error generating response: {str(e)}"
 
 # Create a global instance
 llm_service = LLMService()

@@ -390,7 +390,7 @@ def create_advanced_visualization(df: pd.DataFrame, query_understanding: Dict[st
             fig.patch.set_facecolor('#F0F0F0')
         
         # Add a watermark
-        ax.text(0.99, 0.01, 'SQL Genie 🧞', fontsize=8, color='gray',
+        ax.text(0.99, 0.01, 'SQL Genie 🧞‍♂️', fontsize=8, color='gray',
                ha='right', va='bottom', transform=ax.transAxes, alpha=0.7)
         
         # Adjust layout

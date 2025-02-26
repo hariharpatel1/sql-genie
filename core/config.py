@@ -44,7 +44,7 @@ class Settings(BaseSettings):
     
     # UI Settings
     UI_THEME: str = Field(default="light", env="UI_THEME")
-    UI_SHOW_SQL: bool = Field(default=False, env="UI_SHOW_SQL")
+    UI_SHOW_SQL: bool = Field(default=True, env="UI_SHOW_SQL")
     UI_SHOW_TIMING: bool = Field(default=False, env="UI_SHOW_TIMING")
     UI_PAGE_TITLE: str = Field(default="Financial Data Query Assistant", env="UI_PAGE_TITLE")
     UI_PAGE_ICON: str = Field(default="💰", env="UI_PAGE_ICON")

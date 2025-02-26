@@ -32,6 +32,10 @@ class Conversation(BaseModel):
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     sql_executions: List[SQLExecution] = []
     metadata: Dict[str, Any] = {}
+
+    def add_id(self, id: str) -> str:
+        self.id = id
+        return id
     
     def add_message(self, role: str, content: str) -> Message:
         """Add a message to the conversation"""
@@ -61,9 +65,11 @@ class ConversationStore(BaseModel):
     """In-memory store for conversations"""
     conversations: Dict[str, Conversation] = {}
     
-    def create_conversation(self) -> Conversation:
+    def create_conversation(self, conversation_id: str) -> Conversation:
         """Create a new conversation and store it"""
         conversation = Conversation()
+        conversation.add_id(conversation_id)
+        
         self.conversations[conversation.id] = conversation
         return conversation
     

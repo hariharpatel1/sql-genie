@@ -19,6 +19,10 @@ class AgentState(BaseModel):
     error: str = ""
     timing: Dict[str, float] = {}
     table_schemas: Dict[str, Any] = {}  # Dynamically loaded from Redshift
+
+    use_in_memory_data: bool = False
+    in_memory_results: Any = None
+    can_answer_from_memory: bool = False
     
     class Config:
         # Allow arbitrary types (like pandas DataFrames)
@@ -85,9 +89,19 @@ class AgentState(BaseModel):
                 
                 try:
                     name = column.get("column_name", "UNKNOWN")
-                    data_type = column.get("data_type", "UNDEFINED")
+                    
+                    # Handle data type conversion for complex types
+                    if isinstance(column.get("data_type"), pd.Timestamp):
+                        data_type = str(column.get("data_type"))
+                    else:
+                        data_type = column.get("data_type", "UNDEFINED")
+                    
                     nullable = column.get("is_nullable", "YES")
                     description = column.get("description", "No description")
+                    
+                    # Convert Timestamp to string if needed
+                    if isinstance(description, pd.Timestamp):
+                        description = str(description)
                     
                     schema_text += f"  - {name} ({data_type}"
                     if nullable == "NO":
@@ -98,5 +112,6 @@ class AgentState(BaseModel):
                     continue
             
             schema_text += "\n"
-        logger.info(f"Formatted table schemas:\n{schema_text}")
+        
+        logger.info(f"Formatted table schemas fetched from Redshift")
         return schema_text or "No valid schema information found."
