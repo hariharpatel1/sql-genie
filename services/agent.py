@@ -99,12 +99,6 @@ class AgentService:
 
         start_time = time.time()
 
-        try:
-            display(Image(graph.get_graph().draw_mermaid_png()))
-        except Exception:
-            # This requires some extra dependencies and is optional
-            pass
-
         
         # Load table schemas if not already loaded
         try:
