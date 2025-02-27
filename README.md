@@ -51,13 +51,7 @@ A conversational AI agent that helps query SQL databases using natural language.
    DEBUG=False
    ```
 
-4. Create the necessary directory structure:
-   ```bash
-   mkdir -p models agents tools memory utils
-   touch models/__init__.py agents/__init__.py tools/__init__.py memory/__init__.py utils/__init__.py
-   ```
-
-5. Copy the code files from this project into their respective directories.
+4. Copy the code files from this project into their respective directories.
 
 ## Running the Application
 
@@ -103,7 +97,7 @@ pydantic>=2.0.0
 
 ## License
 
-MIT License
+Genie Universal License
 
 ## Author
 
